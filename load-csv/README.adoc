@@ -1,0 +1,56 @@
+= CSV Import
+
+A short example how to call `LOAD CSV` with a file located inside the database's import folder from the Neo4j driver or Neo4j-OGM.
+
+== Run the example
+To get a clean instance we use Docker
+
+=== First step: The Docker instance
+[source,shell]
+----
+> docker run -i -t
+    --publish=7474:7474
+    --publish=7687:7687
+    --env=NEO4J_AUTH=neo4j/secret
+    --env=NEO4J_dbms_security_allow__csv__import__from__file__urls=true
+    neo4j:4.0
+----
+
+For enabling CSV imports from a local file we have to set the property `dbms.security.allow_csv_import_from_file_urls=true`.
+In the Docker bootstrapping phase the environment parameters will get parsed and applied to the `neo4j.conf`.
+See the https://neo4j.com/docs/operations-manual/current/docker/configuration/#docker-environment-variables[documentation] for more details.
+
+=== Second step: Copy the example file
+
+For this we grab the example file from the Neo4j doc server and copy it into the running container.
+
+[source,shell]
+----
+> curl -o artists.csv https://neo4j.com/docs/cypher-manual/4.1/csv/artists.csv
+
+> docker ps
+CONTAINER ID        IMAGE
+6f47df518655        neo4j:4.0
+
+> docker cp artists.csv 6f47df518655:/var/lib/neo4j/import/artists.csv
+----
+
+=== Third step: Run the examples
+
+There are two files that do basically the same but show the (minor) differences between running the `LOAD CSV` directly with the Neo4j Java driver and Neo4j-OGM.
+
+[source,shell]
+----
+> mvn exec:java -Dexec.mainClass="com.meistermeier.neo4j.LoadCsvWithDriver"
+[...]
+"ABBA"
+"Roxette"
+"Europe"
+"The Cardigans"
+[...]
+
+> mvn exec:java -Dexec.mainClass="com.meistermeier.neo4j.LoadCsvWithOGM"
+[...]
+[Artist{id=4, name='ABBA', year=1992}, Artist{id=5, name='Roxette', year=1986}, Artist{id=6, name='Europe', year=1979}, Artist{id=7, name='The Cardigans', year=1992}]
+[...]
+----
