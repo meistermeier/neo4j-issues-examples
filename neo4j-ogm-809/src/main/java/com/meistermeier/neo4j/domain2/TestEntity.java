@@ -7,7 +7,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 /**
  * @author Gerrit Meier
  */
-@NodeEntity("Test2")
+@NodeEntity("TestEntity2")
 public class TestEntity {
 
 	@GeneratedValue

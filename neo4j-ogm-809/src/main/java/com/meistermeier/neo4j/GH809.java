@@ -29,13 +29,13 @@ public class GH809 {
 		Session session = sessionFactory.openSession();
 
 		com.meistermeier.neo4j.domain1.TestEntity testEntity1 =
-			session.queryForObject(com.meistermeier.neo4j.domain1.TestEntity.class, "MATCH (n:Test1) return n",
+			session.queryForObject(com.meistermeier.neo4j.domain1.TestEntity.class, "MATCH (n:TestEntity) return n",
 				emptyMap());
 
 		System.out.println(testEntity1.getName());
 
 		com.meistermeier.neo4j.domain2.TestEntity testEntity2 = session
-			.queryForObject(com.meistermeier.neo4j.domain2.TestEntity.class, "MATCH (n:Test2) return n", emptyMap());
+			.queryForObject(com.meistermeier.neo4j.domain2.TestEntity.class, "MATCH (n:TestEntity2) return n", emptyMap());
 
 		System.out.println(testEntity2.getName());
 
@@ -46,8 +46,8 @@ public class GH809 {
 		Session session = sessionFactory.openSession();
 		Transaction transaction = session.beginTransaction();
 		session.query("MATCH (n) detach delete n", emptyMap());
-		session.query("CREATE (t:Test1{name:'Test1'})", emptyMap());
-		session.query("CREATE (t:Test2{name:'Test2'})", emptyMap());
+		session.query("CREATE (t:TestEntity{name:'Test1'})", emptyMap());
+		session.query("CREATE (t:TestEntity2{name:'Test2'})", emptyMap());
 		transaction.commit();
 	}
 }

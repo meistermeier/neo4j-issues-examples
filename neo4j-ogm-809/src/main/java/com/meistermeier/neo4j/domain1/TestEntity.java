@@ -2,12 +2,10 @@ package com.meistermeier.neo4j.domain1;
 
 import org.neo4j.ogm.annotation.GeneratedValue;
 import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
 
 /**
  * @author Gerrit Meier
  */
-@NodeEntity("Test1")
 public class TestEntity {
 
 	@GeneratedValue
