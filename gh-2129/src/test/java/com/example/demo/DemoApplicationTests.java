@@ -2,22 +2,19 @@ package com.example.demo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.AbstractNeo4jConfig;
+import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -29,6 +26,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+//@Transactional
 @Testcontainers
 class DemoApplicationTests {
 
@@ -37,9 +35,11 @@ class DemoApplicationTests {
 			.withoutAuthentication();
 
 	private final Driver driver;
+	private final Neo4jClient neo4jClient;
 
-	DemoApplicationTests(@Autowired Driver driver) {
+	DemoApplicationTests(@Autowired Driver driver, @Autowired Neo4jClient neo4jClient) {
 		this.driver = driver;
+		this.neo4jClient = neo4jClient;
 	}
 
 	@BeforeEach
@@ -58,6 +58,11 @@ class DemoApplicationTests {
 		group.setDevices(Collections.singleton(device));
 
 		repository.save(group);
+
+		// verify within the same transactional boundaries if @Transaction is defined e.g. around the test class.
+		// see commented @Transactional on class level
+		assertThat(neo4jClient.query("MATCH (g:Group)-[:IS_LINKED]->(d:Device) return g")
+				.fetch().all()).hasSize(1);
 
 		try (Session session = driver.session()) {
 			List<Record> result = session.run("MATCH (g:Group)-[:IS_LINKED]->(d:Device) return g").list();
