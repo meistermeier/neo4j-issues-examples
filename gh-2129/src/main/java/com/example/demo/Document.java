@@ -1,8 +1,9 @@
 package com.example.demo;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
@@ -10,14 +11,17 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 @Getter
 @Setter
 @Node
+@AllArgsConstructor
 public class Document {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private final String id;
 
-    private String name;
+    private final String name;
 
     @Relationship("CONCERNS")
     private Concerns concerns;
+
+    @Version
+    private Long version;
 }

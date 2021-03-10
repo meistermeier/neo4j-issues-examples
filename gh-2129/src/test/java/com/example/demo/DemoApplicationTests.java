@@ -2,11 +2,26 @@ package com.example.demo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.neo4j.config.AbstractNeo4jConfig;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +29,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Testcontainers
 class DemoApplicationTests {
+
+	@Container
+	private static Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>(DockerImageName.parse("neo4j").withTag("4.1"))
+			.withoutAuthentication();
 
 	private final Driver driver;
 
@@ -79,13 +99,12 @@ class DemoApplicationTests {
 
 	@Test
 	void removeRelationship(@Autowired DocumentRepository documentRepository) {
-		Long documentId = null;
 		try (Session session = driver.session()) {
-			documentId = session.run("CREATE (d:Document{name:'A'})-[:CONCERNS]->(:User{name:'B'}) return id(d) as id")
-					.single().get("id").asLong();
+			session.run("CREATE (d:Document{name:'A', id:'A', version: 0})-[:CONCERNS]->(:User{name:'B', id:'B'})")
+					.consume();
 		}
 
-		Document document = documentRepository.findById(documentId).get();
+		Document document = documentRepository.findById("A").get();
 		document.setConcerns(null);
 		documentRepository.save(document);
 
@@ -96,6 +115,17 @@ class DemoApplicationTests {
 			// now with the non-existing relationship
 			list = session.run("MATCH (d:Document)-[:CONCERNS]->(:User) return d").list();
 			assertThat(list).hasSize(0);
+		}
+	}
+
+	@Configuration
+	@EnableTransactionManagement
+	@EnableNeo4jRepositories
+	static class Config extends AbstractNeo4jConfig {
+
+		@Bean
+		public Driver driver() {
+			return GraphDatabase.driver(neo4jContainer.getBoltUrl());
 		}
 	}
 
