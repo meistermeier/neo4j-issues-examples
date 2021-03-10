@@ -13,8 +13,7 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 public class Document {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private String id;
 
     private String name;
 

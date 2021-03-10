@@ -79,10 +79,10 @@ class DemoApplicationTests {
 
 	@Test
 	void removeRelationship(@Autowired DocumentRepository documentRepository) {
-		Long documentId = null;
+		String documentId = null;
 		try (Session session = driver.session()) {
-			documentId = session.run("CREATE (d:Document{name:'A'})-[:CONCERNS]->(:User{name:'B'}) return id(d) as id")
-					.single().get("id").asLong();
+			documentId = session.run("CREATE (d:Document{id: 'DID', name:'A'})-[:CONCERNS]->(:User{id: 'UID', name:'B'}) return d.id as id")
+					.single().get("id").asString();
 		}
 
 		Document document = documentRepository.findById(documentId).get();
