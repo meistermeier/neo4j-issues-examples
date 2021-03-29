@@ -63,14 +63,14 @@ class DemoApplicationTests {
 	@Test
 	void loadWithTemplate() {
 
-		String query = "MATCH path=(b:BaseHierarchy {code:'JQCLB00'})-[i:INCLUDES]->(g:Group)-[p:PARENT_OF*]->(c:Client) " +
+		String query = "MATCH path=(bh:BaseHierarchy {code:'JQCLB00'})-[i:INCLUDES]->(g:Group)-[p:PARENT_OF*]->(c:Client) " +
 				"WHERE (g.code = 'EMIRG' OR g.code = 'BAESS') " +
 				"AND c.sector = '14' " +
-				"WITH collect(path) as paths, b " +
-				"WITH b, " +
+				"WITH collect(path) as paths, bh " +
+				"WITH bh, " +
 				"reduce(a=[], node in reduce(b=[], c in [aa in paths | nodes(aa)] | b + c) | case when node in a then a else a + node end) as nodes, " +
 				"reduce(d=[], relationship in reduce(e=[], f in [dd in paths | relationships(dd)] | e + f) | case when relationship in d then d else d + relationship end) as relationships " +
-				"RETURN b, relationships, nodes";
+				"RETURN bh, relationships, nodes";
 
 		BaseHierarchy baseHierarchy = neo4jTemplate.findAll(query, BaseHierarchy.class).get(0);
 		assertThat(baseHierarchy.getCode()).isEqualTo("JQCLB00");
