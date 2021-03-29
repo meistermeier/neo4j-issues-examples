@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.neo4j.cypherdsl.core.Cypher;
@@ -8,13 +7,11 @@ import org.neo4j.cypherdsl.core.Expression;
 import org.neo4j.cypherdsl.core.FunctionInvocation;
 import org.neo4j.cypherdsl.core.Functions;
 import org.neo4j.cypherdsl.core.NamedPath;
-import org.neo4j.cypherdsl.core.Node;
 import org.neo4j.cypherdsl.core.Statement;
 import org.neo4j.cypherdsl.core.SymbolicName;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
 
@@ -55,8 +52,10 @@ class DemoApplicationTests {
 					"CREATE (b)-[:INCLUDES]->(g2:Group{code:'BAESS'}) " +
 					"CREATE (g1)-[:PARENT_OF]->(c1:Client{sector:'11'}) " +
 					"CREATE (g2)-[:PARENT_OF]->(c2:Client{sector:'11'}) " +
-					"CREATE (c1)-[:PARENT_OF]->(:Client{sector:'14'}) " +
-					"CREATE (c2)-[:PARENT_OF]->(:Client{sector:'14'}) "
+					"CREATE (c1)-[:PARENT_OF]->(c3:Client{sector:'12'}) " +
+					"CREATE (c2)-[:PARENT_OF]->(c4:Client{sector:'13'}) " +
+					"CREATE (c3)-[:PARENT_OF]->(:Client{sector:'14'}) " +
+					"CREATE (c4)-[:PARENT_OF]->(:Client{sector:'14'}) "
 			);
 			transaction.commit();
 		}
@@ -72,7 +71,10 @@ class DemoApplicationTests {
 				.extracting("sector").containsExactly("11", "11");
 		assertThat(baseHierarchy.getGroups())
 				.flatExtracting("clients").flatExtracting("clients")
-				.extracting("sector").containsExactly("14", "14");
+				.extracting("sector").containsExactlyInAnyOrder("12", "13");
+		assertThat(baseHierarchy.getGroups())
+				.flatExtracting("clients").flatExtracting("clients").flatExtracting("clients")
+				.extracting("sector").containsExactlyInAnyOrder("14", "14");
 	}
 
 	/**
@@ -80,7 +82,7 @@ class DemoApplicationTests {
 	 * @param alias the alias of the expression to be returned
 	 * @return
 	 */
-	Expression extract(
+	Expression createReduceFunction(
 		Function<SymbolicName, FunctionInvocation> extractor,
 		String alias
 	) {
@@ -116,7 +118,7 @@ class DemoApplicationTests {
 			.where(g.property("code").isEqualTo(Cypher.literalOf("EMIRG")).or(g.property("code").isEqualTo(Cypher.literalOf("BAESS"))))
 			.and(c.property("sector").isEqualTo(Cypher.literalOf("14")))
 			.with(r, collect(path).as("paths"))
-			.returning(r, extract(Functions::nodes, "nodes"), extract(Functions::relationships, "relationships"))
+			.returning(r, createReduceFunction(Functions::nodes, "nodes"), createReduceFunction(Functions::relationships, "relationships"))
 			.build();
 
 		BaseHierarchy baseHierarchy = neo4jTemplate.findAll(statement, Map.of("code", "JQCLB00"), BaseHierarchy.class).get(0);
@@ -127,6 +129,9 @@ class DemoApplicationTests {
 				.extracting("sector").containsExactly("11", "11");
 		assertThat(baseHierarchy.getGroups())
 				.flatExtracting("clients").flatExtracting("clients")
-				.extracting("sector").containsExactly("14", "14");
+				.extracting("sector").containsExactlyInAnyOrder("12", "13");
+		assertThat(baseHierarchy.getGroups())
+				.flatExtracting("clients").flatExtracting("clients").flatExtracting("clients")
+				.extracting("sector").containsExactlyInAnyOrder("14", "14");
 	}
 }
