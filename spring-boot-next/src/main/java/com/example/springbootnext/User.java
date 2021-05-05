@@ -12,10 +12,15 @@ public class User {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private final Long id;
 
     @Relationship("FRIEND")
-    private List<Friend> friends;
+    private final List<Friend> friends;
+
+    public User(Long id, List<Friend> friends) {
+        this.id = id;
+        this.friends = friends;
+    }
 
     public Long getId() {
         return id;
@@ -25,7 +30,4 @@ public class User {
         return friends;
     }
 
-    public void setFriends(List<Friend> friends) {
-        this.friends = friends;
-    }
 }

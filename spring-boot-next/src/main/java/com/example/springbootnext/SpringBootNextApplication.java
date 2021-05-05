@@ -21,8 +21,8 @@ public class SpringBootNextApplication {
 	public CommandLineRunner commandLineRunner(UserRepository repository, Driver driver) {
 		return (args) -> {
 			driver.session().run("MATCH (n) DETACH DELETE n").consume();
-			User user = new User();
-			user.setFriends(List.of(new Friend()));
+			List<Friend> friends = List.of(new Friend());
+			User user = new User(null, friends);
 			repository.save(user).block();
 		};
 	}
