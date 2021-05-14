@@ -24,12 +24,18 @@ class Gh2176ApplicationTests {
 
     @Test
     void innerDomainLoading() {
+
+        // create one node with the driver
         try (Session session = driver.session()) {
+            session.run("MATCH (n) detach delete n").consume();
             session.run("CREATE (:InnerDomain:OuterDomain)").consume();
         }
 
+        // create another one with the repository
+        repository.save(new OuterDomain.InnerDomain());
+
         List<OuterDomain> domains = repository.findAll();
-        assertThat(domains).hasSize(1);
+        assertThat(domains).hasSize(2);
         assertThat(domains.get(0)).isOfAnyClassIn(OuterDomain.InnerDomain.class);
     }
 
