@@ -13,11 +13,6 @@ fun main(args: Array<String>) {
 	runApplication<DiscordRelationshipsOptimisticLockingApplication>(*args)
 }
 
-/**
- * CAUTION: This data class now has a mixture of constructor-only and mutable properties.
- * Spring Data cannot really work with both within the same class.
- * Since the relationships need to be mutable, the whole class will have to be mutable in the end (var properties)
- */
 @Node
 data class Identity(
 	@Id @GeneratedValue val id: Long? = null,
