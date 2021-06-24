@@ -15,35 +15,21 @@ fun main(args: Array<String>) {
 
 @Node
 data class Identity(
-	@Id @GeneratedValue val id: Long? = null,
+	@Id @GeneratedValue var id: Long? = null,
 	var identifier: String,
 	@Relationship(
 		type = "FOLLOWS",
 		direction = Relationship.Direction.OUTGOING
 	) var follows: Set<Relation> = setOf(),
-	@Version val version: Long? = null
-) {
-	fun withId(newId: Long): Identity {
-		return Identity(newId, identifier, follows, version)
-	}
-	fun withIdentifier(newIdentifier: String): Identity {
-		return Identity(id, newIdentifier, follows, version)
-	}
-	fun withFollows(newFollows: Set<Relation>): Identity {
-		return this.copy(follows = newFollows)
-	}
-	fun withVersionId(newVersion: Long): Identity {
-		return Identity(id, identifier, follows, newVersion)
-	}
-}
+	@Version var version: Long? = null
+)
 
+// removed data class here because it will end up in StackOverflow due to a infinite hashCode chain.
 @RelationshipProperties
-data class Relation(
-	@Id @GeneratedValue val id: Long? = null,
-	@TargetNode val target: Identity,
-	val strength: Double
-) {
-	// omitted wither methods, hashcode, equals...
-}
+class Relation(
+	@Id @GeneratedValue var id: Long? = null,
+	@TargetNode var target: Identity,
+	var strength: Double
+)
 
 interface IdentityRepository : Neo4jRepository<Identity, Long>

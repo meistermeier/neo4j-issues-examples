@@ -1,6 +1,5 @@
 package com.meistermeier.neo4j.discordrelationshipsoptimisticlocking
 
-import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.neo4j.driver.Driver
@@ -31,8 +30,6 @@ class DiscordRelationshipsOptimisticLockingApplicationTests {
 //        val user2WithFollows = user2.withFollows(setOf(relation2To1))
 
         identityRepository.saveAll(listOf(user1, user2))
-
-
 
     }
 
