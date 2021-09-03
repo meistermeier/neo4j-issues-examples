@@ -2,7 +2,11 @@ package com.example.gh2372;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface CarRepository extends Neo4jRepository<Domain.ACar, Long> {
+import java.util.List;
 
-    Domain.ACar findByUuid(String uuid);
+public interface CarRepository extends Neo4jRepository<Domain.Vehicle, String> {
+
+    Domain.Vehicle findByUuid(String uuid);
+
+    List<Domain.Vehicle> findByArchivedIsNullOrArchivedIsFalse();
 }
