@@ -25,6 +25,10 @@ public class Domain {
         private Route route;
     }
 
+    public interface VehicleProjection {
+        String getUuid();
+    }
+
     @Node
     public static class Route {
         @Id

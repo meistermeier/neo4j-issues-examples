@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,6 +101,12 @@ class Gh2372ApplicationTests {
     @Test
     void countByRepository() {
         assertThat(carRepository.countByUuidContaining("C")).isEqualTo(3);
+    }
+
+    @Test
+    void loadOnlyId() {
+        Collection<Domain.VehicleProjection> projections = carRepository.findByArchivedIsNull();
+        assertThat(projections).extracting("uuid").containsExactlyInAnyOrder("OC", "SC", "BC");
     }
 
 }
