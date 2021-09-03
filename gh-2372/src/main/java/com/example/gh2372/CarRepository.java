@@ -9,4 +9,6 @@ public interface CarRepository extends Neo4jRepository<Domain.Vehicle, String> {
     Domain.Vehicle findByUuid(String uuid);
 
     List<Domain.Vehicle> findByArchivedIsNullOrArchivedIsFalse();
+
+    long countByUuidContaining(String uuidPart);
 }

@@ -97,4 +97,9 @@ class Gh2372ApplicationTests {
         assertThat(vehicles).hasSize(3);
     }
 
+    @Test
+    void countByRepository() {
+        assertThat(carRepository.countByUuidContaining("C")).isEqualTo(3);
+    }
+
 }
