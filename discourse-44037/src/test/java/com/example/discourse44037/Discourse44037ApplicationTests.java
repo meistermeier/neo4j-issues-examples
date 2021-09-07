@@ -33,7 +33,7 @@ class Discourse44037ApplicationTests {
 
     @Test
     void loadWithRelationshipProperties() {
-        List<CocktailEntity> cocktails = repository.findAll();
+        List<CocktailEntity> cocktails = repository.allCocktails();
         assertThat(cocktails).hasSize(1);
 
         CocktailEntity cocktail = cocktails.get(0);
