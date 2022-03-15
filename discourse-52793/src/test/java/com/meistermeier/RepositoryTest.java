@@ -28,10 +28,21 @@ public class RepositoryTest {
 
 	@Test
 	void findWithCustomQuery() {
-		Optional<MyNode> myNode = repository.customSubGraphStartingAt("2");
+		Optional<MyNode> myNode = repository.customSubGraphStartingAt("24");
 
 		assertThat(myNode).isPresent();
 		assertThat(myNode.get().outgoingEdges).hasSize(2);
+		checkRelationships(myNode.get());
+	}
+
+	private void checkRelationships(MyNode myNode) {
+		for (MyEdge edge : myNode.outgoingEdges) {
+			if (edge.targetNode.id.equals("0") || edge.targetNode.id.equals("1")) {
+				continue;
+			}
+			assertThat(edge.targetNode.outgoingEdges).hasSize(2);
+			checkRelationships(edge.targetNode);
+		}
 	}
 
 	@Test
@@ -40,5 +51,6 @@ public class RepositoryTest {
 
 		assertThat(myNode).isPresent();
 		assertThat(myNode.get().outgoingEdges).hasSize(2);
+		checkRelationships(myNode.get());
 	}
 }
