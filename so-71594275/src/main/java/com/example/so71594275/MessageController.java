@@ -21,6 +21,12 @@ public class MessageController {
 		return messageService.saveNewMessage(message);
 	}
 
+
+	@PostMapping(path ="/alternative", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Message saveMessageAlternative(@RequestBody Message message) {
+		return messageService.saveNewMessageAlternative(message);
+	}
+
 	@PostMapping(path = "/clearusers", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Message saveMessageDuplicateUsers(@RequestBody Message message) {
 		return messageService.saveNewMessageEmptyUsersProperties(message);
