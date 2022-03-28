@@ -40,4 +40,9 @@ public class MessageService {
 
 		return messageRepository.save(newMessage);
 	}
+
+	@Transactional
+	public Message saveNewMessageEmptyUsersProperties(Message newMessage) {
+		return messageRepository.save(newMessage);
+	}
 }
