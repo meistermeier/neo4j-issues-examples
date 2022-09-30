@@ -38,5 +38,13 @@ class Gh2592ApplicationTests {
 		Assertions.assertThat(entityFromCustomQueryAll.getEdgeIncoming()).hasSize(2);
 	}
 
+	@Test
+	void testIncomingEdgesCustomQuery2() {
+		String model = "hktxjmmodel9";
+		Page<TxjmNodeEntity> entitiesForCustomQueryAll = repository.queryAllNodesByModel(model, Pageable.ofSize(20));
+		TxjmNodeEntity entityFromCustomQueryAll = entitiesForCustomQueryAll.stream().filter(s -> s.getIdd().equals("node-41498c56-7f82-4444-927a-39e73fc1bfa1")).findFirst().get();
+
+		Assertions.assertThat(entityFromCustomQueryAll.getEdgeIncoming()).hasSize(2);
+	}
 
 }
