@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,9 +32,11 @@ class Gh2680ApplicationTests {
 		newMaterial.setMaterialId(materialId);
 		newMaterial.setMaterialName("another name");
 		newMaterial.setMaterialDescription("test description");
+		newMaterial.setMaterialLabels(Set.of("AnotherLabel1", "AnotherLabel2"));
 
 		oldMaterial.setMaterialName(newMaterial.getMaterialName());
 		oldMaterial.setMaterialDescription(newMaterial.getMaterialDescription());
+		oldMaterial.setMaterialLabels(newMaterial.getMaterialLabels());
 
 		repository.save(oldMaterial);
 
