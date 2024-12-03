@@ -1,5 +1,7 @@
 package com.meistermeier.sdnmultipledatabases;
 
+import org.neo4j.cypherdsl.core.renderer.Configuration;
+import org.neo4j.cypherdsl.core.renderer.Dialect;
 import org.neo4j.driver.Driver;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -17,10 +19,14 @@ public class SdnMultipleDatabasesApplication {
     @Bean
     public CommandLineRunner testDataCreator(Driver driver, @Qualifier("driver2") Driver archiveDriver) {
         return args -> {
-            System.out.println(driver == archiveDriver);
-//            driver.executableQuery("CREATE (u:User{name:'prod user'})").execute();
-//            archiveDriver.executableQuery("CREATE (u:User{name:'archived user'})").execute();
+            driver.executableQuery("CREATE (u:User{name:'prod user'})").execute();
+            archiveDriver.executableQuery("CREATE (u:User{name:'archived user'})").execute();
         };
+    }
+
+    @Bean
+    public Configuration cypherDslConfiguration() {
+        return Configuration.newConfig().withDialect(Dialect.NEO4J_5).build();
     }
 
 }
