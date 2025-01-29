@@ -20,17 +20,42 @@ class Discourse72421ApplicationTests {
 	}
 
 	@Test
-	void removeRelationship(@Autowired DeviceRepository repository) {
+	void removeRelationshipSuccessfully(@Autowired DeviceRepository repository) {
 		var foundEntry = repository.findById("dev1");
 
 		assertThat(foundEntry).isPresent();
 
 		var device = foundEntry.get();
-		device.setDeviceManager(null);
+		device.setDeviceManagerRelationship(null);
 		repository.save(device);
 
 		var loadedDevice = repository.findById("dev1").get();
-		assertThat(loadedDevice.getDeviceManager()).isNull();
+		assertThat(loadedDevice.getDeviceManagerRelationship()).isNull();
+
+	}
+	@Test
+	void removeRelationshipNotSuccessfully(@Autowired DeviceRepository repository, @Autowired Driver driver) {
+
+		try (var session = driver.session()) {
+			session.run("MATCH (n)-[r]->(m) return n, r, m")
+				.forEachRemaining(record -> System.out.printf("%s %s %s", record.get("n").asNode(), record.get("r").asRelationship(), record.get("m").asNode()));
+		}
+
+		var foundEntry = repository.findById("dev1");
+
+		assertThat(foundEntry).isPresent();
+
+		var device = foundEntry.get();
+		device.getDeviceManagerRelationship().deviceManager = new DeviceManager("mgr2", "manager2");
+		repository.save(device);
+
+		try (var session = driver.session()) {
+			session.run("MATCH (n)-[r]->(m) return n, r, m")
+				.forEachRemaining(record -> System.out.printf("%s %s %s", record.get("n").asNode(), record.get("r").asRelationship(), record.get("m").asNode()));
+		}
+
+		var loadedDevice = repository.findById("dev1").get();
+		assertThat(loadedDevice.getDeviceManagerRelationship()).isNull();
 
 	}
 

@@ -17,7 +17,7 @@ public class Device {
     private final String name;
 
     @Relationship("MANAGED_BY")
-    private DeviceManager deviceManager;
+    private DeviceManagerRelationship deviceManagerRelationship;
 
     @Version
     private Long version;
@@ -35,11 +35,11 @@ public class Device {
         return name;
     }
 
-    public DeviceManager getDeviceManager() {
-        return deviceManager;
+    public DeviceManagerRelationship getDeviceManagerRelationship() {
+        return deviceManagerRelationship;
     }
 
-    public void setDeviceManager(DeviceManager deviceManager) {
-        this.deviceManager = deviceManager;
+    public void setDeviceManagerRelationship(DeviceManagerRelationship deviceManagerRelationship) {
+        this.deviceManagerRelationship = deviceManagerRelationship;
     }
 }
