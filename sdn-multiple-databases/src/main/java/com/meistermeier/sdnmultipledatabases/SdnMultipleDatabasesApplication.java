@@ -19,7 +19,7 @@ public class SdnMultipleDatabasesApplication {
     @Bean
     public CommandLineRunner testDataCreator(Driver driver, @Qualifier("driver2") Driver archiveDriver) {
         return args -> {
-            driver.executableQuery("CREATE (u:User{name:'prod user'})").execute();
+            driver.executableQuery("CREATE (u:User{name:'someone'})").execute();
             archiveDriver.executableQuery("CREATE (u:User{name:'archived user'})").execute();
         };
     }

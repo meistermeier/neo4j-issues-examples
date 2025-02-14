@@ -4,6 +4,7 @@ import com.meistermeier.sdnmultipledatabases.archive.ArchiveUserRepository;
 import com.meistermeier.sdnmultipledatabases.prod.ProdUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,6 +27,12 @@ public class UserController {
     public List<User> findAllProdUsers() {
         return prodRepository.findAll();
     }
+
+    @GetMapping("/a/{name}")
+    public List<User> findByName(@PathVariable("name") String name) {
+        return archiveRepository.findByName(name);
+    }
+
     @GetMapping("/a")
     public List<User> findAllArchivedUsers() {
         return archiveRepository.findAll();

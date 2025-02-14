@@ -3,7 +3,10 @@ package com.meistermeier.sdnmultipledatabases.user;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
+
+import java.util.List;
 
 /**
  * @author Gerrit Meier
@@ -16,6 +19,9 @@ public class User {
     String uuid;
 
     private final String name;
+
+    @Relationship
+    private List<Hobby> hobbies;
 
     public User(String name) {
         this.name = name;
