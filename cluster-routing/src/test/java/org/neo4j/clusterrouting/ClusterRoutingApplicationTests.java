@@ -106,4 +106,40 @@ class ClusterRoutingApplicationTests {
                 .findFirst().get();
         assertThat(txBegin.getMessage()).contains("mode=\"r\"");
     }
+
+    @Test
+    void nestedReadOnlyTransactionInWriteTransactionResultsInWriteTransaction(@Autowired SimpleService service) {
+        var logger = (Logger) LoggerFactory.getLogger("org.neo4j.driver.internal.async.outbound.OutboundMessageHandler");
+        var listAppender = new ListAppender<ILoggingEvent>();
+        logger.addAppender(listAppender);
+        listAppender.start();
+        // method under test
+        service.nestedTransactionWithWriteTransaction();
+
+        listAppender.stop();
+        if (listAppender.list.stream().noneMatch(event -> event.getMessage().contains("C: BEGIN"))) {
+            fail("no matching log (C: BEGIN...) to inspect");
+        }
+        var txBegin = listAppender.list.stream().filter(event -> event.getMessage().contains("C: BEGIN"))
+                .findFirst().get();
+        assertThat(txBegin.getMessage()).doesNotContain("mode=\"r\"");
+    }
+
+    @Test
+    void nestedReadOnlyTransactionInReadOnlyTransactionResultsInReadOnlyTransaction(@Autowired SimpleService service) {
+        var logger = (Logger) LoggerFactory.getLogger("org.neo4j.driver.internal.async.outbound.OutboundMessageHandler");
+        var listAppender = new ListAppender<ILoggingEvent>();
+        logger.addAppender(listAppender);
+        listAppender.start();
+        // method under test
+        service.nestedTransactionWithReadOnlyTransaction();
+
+        listAppender.stop();
+        if (listAppender.list.stream().noneMatch(event -> event.getMessage().contains("C: BEGIN"))) {
+            fail("no matching log (C: BEGIN...) to inspect");
+        }
+        var txBegin = listAppender.list.stream().filter(event -> event.getMessage().contains("C: BEGIN"))
+                .findFirst().get();
+        assertThat(txBegin.getMessage()).contains("mode=\"r\"");
+    }
 }
