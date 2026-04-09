@@ -65,6 +65,37 @@ class Gh3091ApplicationTests {
 				assertThat(newRelationshipId).isEqualTo(relationshipId);
 		}
 
+		@Test
+		void addRelationshipToNewEntity() {
+				var entity1 = repository.findById(entity1Id).get();
+
+				var entity2 = new Entity2();
+				entity2.setName("New Name");
+				var newRel = new EntityRelationship();
+				newRel.setEntity2(entity2);
+				entity1.getEntities().add(newRel);
+
+				repository.save(entity1);
+				var updatedEntity = repository.findById(entity1Id).get();
+
+				assertThat(updatedEntity.getEntities()).hasSize(2);
+		}
+
+		@Test
+		void addRelationshipToExistingEntity() {
+				var entity1 = repository.findById(entity1Id).get();
+
+				var existingEntity2 = entity1.getEntities().get(0).getEntity2();
+				var newRel = new EntityRelationship();
+				newRel.setEntity2(existingEntity2);
+				entity1.getEntities().add(newRel);
+
+				repository.save(entity1);
+				var updatedEntity = repository.findById(entity1Id).get();
+
+				assertThat(updatedEntity.getEntities()).hasSize(2);
+		}
+
 		@Configuration
 		@EnableTransactionManagement
 		@EnableNeo4jRepositories
