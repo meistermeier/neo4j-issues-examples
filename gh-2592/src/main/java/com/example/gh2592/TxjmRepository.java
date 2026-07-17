@@ -30,5 +30,17 @@ public interface TxjmRepository extends Neo4jRepository<TxjmNodeEntity, Long> {
 	)
 	Page<TxjmNodeEntity> queryAllNodes(String code, Pageable pageable);
 
+	@Transactional(readOnly = true)
+	@Query(value = "MATCH (s:hktxjm)\n" +
+			"WHERE s.model = $model AND s.nodeStatu = 'ACTIVE' \n" +
+			"WITH s :#{orderBy(#pageable)} SKIP $skip LIMIT $limit \n" +
+			"optional MATCH (s)-[r]-(t:hktxjm)\n" +
+			"WHERE type(r) in ['guanXi']\n" +
+			"RETURN s,collect(r), collect(t)",
+			countQuery = "MATCH (s:hktxjm)\n" +
+					"WHERE s.model = $model AND s.nodeStatu = 'ACTIVE' \n" +
+					"RETURN count(s)"
+	)
+	Page<TxjmNodeEntity> queryAllNodesByModel(String model, Pageable pageable);
 
 }
